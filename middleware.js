@@ -3,61 +3,66 @@ import { NextResponse } from "next/server";
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  // Static assets and internal endpoints bypass
+  // 1. Static assets and internal Next.js paths bypass
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/static") ||
-    pathname.startsWith("/api/auth") ||
-    pathname === "/favicon.ico"
+    pathname === "/favicon.ico" ||
+    pathname.match(/\.(?:svg|png|jpg|jpeg|gif|webp|ico)$/)
   ) {
     return NextResponse.next();
   }
 
-  // Example route-protection check for dashboard routes
+  // 2. Public auth endpoints bypass
+  if (pathname.startsWith("/api/auth")) {
+    return NextResponse.next();
+  }
+
+  // 3. Internal AI Microservice bypass using secure shared secret
+  const internalSecret = process.env.AI_INTERNAL_SECRET_KEY;
+  const requestSecret = request.headers.get("x-internal-secret");
+  const isInternalAuthorized = Boolean(
+    internalSecret && requestSecret && requestSecret === internalSecret
+  );
+
+  // 4. Session Token Resolution from Cookies or Authorization Header
   const sessionToken =
-    request.cookies.get("better-auth.session_token") ||
-    request.cookies.get("__Secure-better-auth.session_token");
+    request.cookies.get("better-auth.session_token")?.value ||
+    request.cookies.get("__Secure-better-auth.session_token")?.value ||
+    (request.headers.get("authorization")?.startsWith("Bearer ")
+      ? request.headers.get("authorization").slice(7).trim()
+      : null);
 
-  const isAuthRoute =
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/register") ||
-    pathname.startsWith("/reset-password");
+  const isAuthenticated = Boolean(sessionToken) || isInternalAuthorized;
 
-  const isDashboardRoute =
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/projects") ||
-    pathname.startsWith("/organizations") ||
-    pathname.startsWith("/approvals") ||
-    pathname.startsWith("/agents");
-
-  // Redirect unauthenticated requests accessing protected areas to login
-  if (isDashboardRoute && !sessionToken) {
-    // In local dev without active auth, allow pass-through if dev bypass header or cookie exists
-    // Otherwise redirect to /login
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.searchParams.set("callbackUrl", pathname);
-    // return NextResponse.redirect(url); // Uncomment when ready to enforce strictly
+  // 5. API Route Protection (return structured JSON error if unauthenticated)
+  if (pathname.startsWith("/api")) {
+    if (!isAuthenticated) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "UNAUTHENTICATED",
+            message: "Authentication required. Please provide a valid session token.",
+          },
+        },
+        { status: 401 }
+      );
+    }
   }
 
-  // Redirect authenticated requests away from login/register
-  if (isAuthRoute && sessionToken) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
-  }
-
+  // 6. Security & Governance Audit Headers
   const response = NextResponse.next();
-
-  // Add security and agent tracking headers
   response.headers.set("X-AI-Platform-Version", "1.0.0");
   response.headers.set("X-Governance-Mode", "Human-In-The-Loop");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
 
   return response;
 }
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
