@@ -1,18 +1,20 @@
-from .project_tools import get_project_details
-from .task_tools import propose_create_task, list_project_tasks
-from .sprint_tools import propose_sprint_plan
-from .risk_tools import propose_create_risk
-from .github_tools import fetch_pr_diff
-from .notification_tools import send_team_notification
-from .rag_tools import query_project_rag
+from tools.client import backend_client
+from tools.project_tools import get_project_details, get_project_requirements
+from tools.task_tools import list_project_tasks, propose_create_task
+from tools.dependency_tools import list_task_dependencies, propose_task_dependency
+from tools.sprint_tools import list_project_sprints, propose_sprint_plan
+from tools.risk_tools import list_project_risks, propose_create_risk
 
 __all__ = [
+    "backend_client",
     "get_project_details",
-    "propose_create_task",
+    "get_project_requirements",
     "list_project_tasks",
+    "propose_create_task",
+    "list_task_dependencies",
+    "propose_task_dependency",
+    "list_project_sprints",
     "propose_sprint_plan",
+    "list_project_risks",
     "propose_create_risk",
-    "fetch_pr_diff",
-    "send_team_notification",
-    "query_project_rag",
 ]

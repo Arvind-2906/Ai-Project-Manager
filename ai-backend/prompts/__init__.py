@@ -1,11 +1,15 @@
-from .product import PRODUCT_AGENT_SYSTEM_PROMPT
-from .sprint import SPRINT_AGENT_SYSTEM_PROMPT
-from .risk import RISK_AGENT_SYSTEM_PROMPT
-from .developer import DEVELOPER_AGENT_SYSTEM_PROMPT
+from prompts.product import PRODUCT_AGENT_SYSTEM_PROMPT
+from prompts.task import TASK_AGENT_SYSTEM_PROMPT
+from prompts.dependency import DEPENDENCY_AGENT_SYSTEM_PROMPT
+from prompts.sprint import SPRINT_AGENT_SYSTEM_PROMPT
+from prompts.risk import RISK_AGENT_SYSTEM_PROMPT
+from prompts.supervisor import SUPERVISOR_AGENT_SYSTEM_PROMPT
 
 __all__ = [
     "PRODUCT_AGENT_SYSTEM_PROMPT",
+    "TASK_AGENT_SYSTEM_PROMPT",
+    "DEPENDENCY_AGENT_SYSTEM_PROMPT",
     "SPRINT_AGENT_SYSTEM_PROMPT",
     "RISK_AGENT_SYSTEM_PROMPT",
-    "DEVELOPER_AGENT_SYSTEM_PROMPT",
+    "SUPERVISOR_AGENT_SYSTEM_PROMPT",
 ]

@@ -22,6 +22,14 @@ class AgentRunRequest(BaseModel):
     context: Optional[Dict[str, Any]] = None
 
 
+class AgentRunResponse(BaseModel):
+    success: bool = True
+    agent_type: AgentType
+    project_id: str
+    result: Any = None
+    logs: Optional[List[Dict[str, Any]]] = None
+
+
 class AgentMessage(BaseModel):
     agent: AgentType
     content: str

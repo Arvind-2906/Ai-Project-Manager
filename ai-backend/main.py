@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from config.settings import settings
 from utils.logger import logger
-from api.routes import health_router, agents_router, workflows_router
+from api.routes import health_router, agents_router, workflows_router, ai_router
 import uvicorn
 
 
@@ -33,10 +33,12 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Include Routers
 app.include_router(health_router)
+app.include_router(ai_router)
 app.include_router(agents_router)
 app.include_router(workflows_router)
 

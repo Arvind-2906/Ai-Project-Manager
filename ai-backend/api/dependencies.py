@@ -9,7 +9,7 @@ async def verify_internal_secret(x_internal_secret: str = Header(None)):
     if settings.DEBUG:
         return True
 
-    expected = settings.INTERNAL_SECRET_KEY
+    expected = settings.INTERNAL_API_SECRET
     if not x_internal_secret or x_internal_secret != expected:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -16,6 +16,14 @@ class WorkflowRunRequest(BaseModel):
     input_data: Dict[str, Any] = Field(default_factory=dict)
 
 
+class WorkflowRunResponse(BaseModel):
+    success: bool = True
+    workflow_type: WorkflowType
+    project_id: str
+    result: Any = None
+    logs: Optional[List[Dict[str, Any]]] = None
+
+
 class WorkflowStateSnapshot(BaseModel):
     workflow_id: str
     workflow_type: WorkflowType
