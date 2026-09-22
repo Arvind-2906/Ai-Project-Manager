@@ -45,13 +45,12 @@ async def propose_create_task(
         "acceptance_criteria": acceptance_criteria or [],
     }
 
-    # Propose to Next.js backend proposals endpoint
+    # Propose to Next.js backend approvals endpoint
     res = await backend_client.post(
-        f"/api/projects/{project_id}/proposals",
+        f"/api/projects/{project_id}/approvals",
         {
-            "action_type": "CREATE_TASK",
-            "description": f"Create task: {title}",
-            "proposed_data": proposal_data,
+            "actionType": "CREATE_TASK",
+            "payload": proposal_data,
         },
     )
 

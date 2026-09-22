@@ -4,6 +4,7 @@ from tools.task_tools import list_project_tasks, propose_create_task
 from tools.dependency_tools import list_task_dependencies, propose_task_dependency
 from tools.sprint_tools import list_project_sprints, propose_sprint_plan
 from tools.risk_tools import list_project_risks, propose_create_risk
+from tools.approval_tools import submit_approval_proposal, list_pending_approvals
 
 __all__ = [
     "backend_client",
@@ -17,4 +18,6 @@ __all__ = [
     "propose_sprint_plan",
     "list_project_risks",
     "propose_create_risk",
+    "submit_approval_proposal",
+    "list_pending_approvals",
 ]

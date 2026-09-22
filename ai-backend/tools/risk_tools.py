@@ -57,11 +57,10 @@ async def propose_create_risk(
     }
 
     res = await backend_client.post(
-        f"/api/projects/{project_id}/proposals",
+        f"/api/projects/{project_id}/approvals",
         {
-            "action_type": "CREATE_RISK",
-            "description": f"Risk: {title} (Score: {risk_score})",
-            "proposed_data": proposal_data,
+            "actionType": "CREATE_RISK",
+            "payload": proposal_data,
         },
     )
 

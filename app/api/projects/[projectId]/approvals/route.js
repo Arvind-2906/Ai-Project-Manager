@@ -1,14 +1,14 @@
-import { requireAuth, requireProjectMember, requireProjectRole } from "@/lib/utils/permissions";
+import { requireAuth, requireProjectMember } from "@/lib/utils/permissions";
 import { approvalService } from "@/lib/services/approvalService";
 import { createApprovalSchema } from "@/lib/validations/approvalSchemas";
 import { handleApiError, successResponse } from "@/lib/auth/errors";
 
 export async function GET(request, { params }) {
   try {
-    const { user } = await requireAuth(request);
+    const { user, isInternal } = await requireAuth(request);
     const { projectId } = params;
 
-    await requireProjectMember(user.id, projectId);
+    await requireProjectMember(user?.id || null, projectId, isInternal);
 
     const { searchParams } = new URL(request.url);
     const filters = {
@@ -24,14 +24,18 @@ export async function GET(request, { params }) {
 
 export async function POST(request, { params }) {
   try {
-    const { user } = await requireAuth(request);
+    const { user, isInternal } = await requireAuth(request);
     const { projectId } = params;
 
-    await requireProjectMember(user.id, projectId);
+    await requireProjectMember(user?.id || null, projectId, isInternal);
     const body = await request.json();
     const validated = createApprovalSchema.parse(body);
 
-    const approval = await approvalService.createApproval(projectId, user.id, validated);
+    const approval = await approvalService.createApproval(
+      projectId,
+      user?.id || null,
+      validated
+    );
     return successResponse(approval, 201);
   } catch (err) {
     return handleApiError(err);

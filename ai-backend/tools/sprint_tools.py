@@ -42,11 +42,15 @@ async def propose_sprint_plan(
     }
 
     res = await backend_client.post(
-        f"/api/projects/{project_id}/proposals",
+        f"/api/projects/{project_id}/approvals",
         {
-            "action_type": "CREATE_SPRINT",
-            "description": f"Sprint Plan: {sprint_name} ({sprint_goal})",
-            "proposed_data": proposal_data,
+            "actionType": "CREATE_SPRINT",
+            "payload": {
+                "name": sprint_name,
+                "goal": sprint_goal,
+                "capacity": target_story_points,
+                "taskIds": task_ids,
+            },
         },
     )
 

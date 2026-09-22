@@ -204,7 +204,9 @@ def test_fastapi_endpoints():
     print("Testing FastAPI Application & Endpoints...")
     client = TestClient(app)
 
-    # 1. GET /health
+    headers = {"x-internal-secret": settings.INTERNAL_API_SECRET}
+
+    # 1. GET /health (public, no auth required)
     res = client.get("/health")
     assert res.status_code == 200, f"GET /health failed: {res.text}"
     data = res.json()
@@ -212,11 +214,15 @@ def test_fastapi_endpoints():
     print("  [OK] GET /health -> 200 HEALTHY")
 
     # 2. POST /ai/project/create
-    res = client.post("/ai/project/create", json={
-        "project_id": "test_proj_fastapi",
-        "raw_idea": "Build distributed event-driven message bus",
-        "business_context": "Fintech payment processing",
-    })
+    res = client.post(
+        "/ai/project/create",
+        json={
+            "project_id": "test_proj_fastapi",
+            "raw_idea": "Build distributed event-driven message bus",
+            "business_context": "Fintech payment processing",
+        },
+        headers=headers,
+    )
     assert res.status_code == 200, f"POST /ai/project/create failed: {res.text}"
     p_data = res.json()
     assert p_data["status"] == "AWAITING_HUMAN_APPROVAL"
@@ -227,11 +233,15 @@ def test_fastapi_endpoints():
     print("  [OK] POST /ai/project/create -> 200 OK (PRD, WBS, DAG, Approval Gated)")
 
     # 3. POST /ai/sprint/plan
-    res = client.post("/ai/sprint/plan", json={
-        "project_id": "test_proj_fastapi",
-        "sprint_name": "Sprint 1",
-        "team_capacity_points": 35,
-    })
+    res = client.post(
+        "/ai/sprint/plan",
+        json={
+            "project_id": "test_proj_fastapi",
+            "sprint_name": "Sprint 1",
+            "team_capacity_points": 35,
+        },
+        headers=headers,
+    )
     assert res.status_code == 200, f"POST /ai/sprint/plan failed: {res.text}"
     s_data = res.json()
     assert s_data["status"] == "AWAITING_HUMAN_APPROVAL"
@@ -239,10 +249,14 @@ def test_fastapi_endpoints():
     print("  [OK] POST /ai/sprint/plan -> 200 OK (Capacity Calculated, Approval Gated)")
 
     # 4. POST /ai/risk/analyze
-    res = client.post("/ai/risk/analyze", json={
-        "project_id": "test_proj_fastapi",
-        "risk_threshold": 5,
-    })
+    res = client.post(
+        "/ai/risk/analyze",
+        json={
+            "project_id": "test_proj_fastapi",
+            "risk_threshold": 5,
+        },
+        headers=headers,
+    )
     assert res.status_code == 200, f"POST /ai/risk/analyze failed: {res.text}"
     r_data = res.json()
     assert r_data["status"] == "COMPLETED"
@@ -250,10 +264,14 @@ def test_fastapi_endpoints():
     print("  [OK] POST /ai/risk/analyze -> 200 OK (Quantitative Risk Scoring)")
 
     # 5. POST /ai/supervisor/analyze
-    res = client.post("/ai/supervisor/analyze", json={
-        "project_id": "test_proj_fastapi",
-        "trigger_event": "MANUAL_CHECK",
-    })
+    res = client.post(
+        "/ai/supervisor/analyze",
+        json={
+            "project_id": "test_proj_fastapi",
+            "trigger_event": "MANUAL_CHECK",
+        },
+        headers=headers,
+    )
     assert res.status_code == 200, f"POST /ai/supervisor/analyze failed: {res.text}"
     sup_data = res.json()
     assert sup_data["status"] == "DECIDED"

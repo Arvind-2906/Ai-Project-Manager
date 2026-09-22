@@ -41,11 +41,10 @@ async def propose_task_dependency(
     }
 
     res = await backend_client.post(
-        f"/api/projects/{project_id}/proposals",
+        f"/api/projects/{project_id}/approvals",
         {
-            "action_type": "CREATE_TASK_DEPENDENCY",
-            "description": f"Dependency: {from_task_id} {dependency_type} {to_task_id}",
-            "proposed_data": proposal_data,
+            "actionType": "CREATE_TASK_DEPENDENCY",
+            "payload": proposal_data,
         },
     )
 
